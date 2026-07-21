@@ -1,8 +1,8 @@
 //+------------------------------------------------------------------+
-//|                    DashboardEngine.mqh                             |
-//|                                                                   |
-//| Purpose: Display dashboard on chart showing EA status             |
-//|          Shows trend, signal, confidence, and reasons             |
+//|                    DashboardEngine.mqh                           |
+//|                                                                  |
+//| Purpose: Display dashboard on chart showing EA status            |
+//|          Shows trend, signal, confidence, and reasons            |
 //+------------------------------------------------------------------+
 
 #ifndef DASHBOARD_ENGINE_H
@@ -30,36 +30,33 @@ public:
     
     // Update Dashboard Display
     static void Update(
-    double ema20,
-    double ema50,
-    double ema200,
-    double rsi14,
-    double atr14,
-    double bid,
-    double ask,
-    double spread,
-    ENUM_TREND trend,
-    ENUM_SIGNAL signal,
-    const ConfidenceBreakdown &breakdown)
+        double ema20,
+        double ema50,
+        double ema200,
+        double rsi14,
+        double atr14,
+        double bid,
+        double ask,
+        double spread,
+        ENUM_TREND trend,
+        ENUM_SIGNAL signal,
+        const ConfidenceBreakdown &breakdown)
     {
-        // Build Dashboard Text
-        string dashboardText = BuildDashboardText(ema20, ema50, ema200, rsi14, atr14, spread, trend);
-        
-        // Display on Chart
+        string dashboardText = BuildDashboardText(ema20, ema50, ema200, rsi14, atr14, spread, trend, signal, breakdown);
         DisplayText(dashboardText);
     }
     
 private:
-    // Build Dashboard Text
-    static string BuildDashboardText(double ema20, double ema50, double ema200, 
+    static string BuildDashboardText(double ema20, double ema50, double ema200,
                                      double rsi14, double atr14, double spread,
-                                     ENUM_TREND trend)
+                                     ENUM_TREND trend, ENUM_SIGNAL signal,
+                                     const ConfidenceBreakdown &breakdown)
     {
         string text = "";
         
         text += "╔════════════════════════════════════════════════════════════╗\n";
-        text += "║        CRaFt AI GOLD EA V4 PRO - BUILD 001              ║\n";
-        text += "║           Framework Phase - MONITORING                  ║\n";
+        text += "║        CRaFt AI GOLD EA V4 PRO - BUILD 002              ║\n";
+        text += "║           Decision Engine - MONITORING                  ║\n";
         text += "╚════════════════════════════════════════════════════════════╝\n";
         text += "\n";
         
@@ -70,7 +67,17 @@ private:
         
         text += "═══════════════════════════════════════════════════════════\n";
         text += "TREND:          " + TrendEngine::TrendToString(trend) + "\n";
+        text += "SIGNAL:         " + SignalEngine::SignalToString(signal) + "\n";
         text += "═══════════════════════════════════════════════════════════\n";
+        text += "\n";
+        
+        text += "CONFIDENCE:\n";
+        text += "  Trend:        " + DoubleToString(breakdown.trendScore, 0) + "/30\n";
+        text += "  RSI:          " + DoubleToString(breakdown.rsiScore, 0) + "/20\n";
+        text += "  ATR:          " + DoubleToString(breakdown.atrScore, 0) + "/20\n";
+        text += "  Spread:       " + DoubleToString(breakdown.spreadScore, 0) + "/15\n";
+        text += "  Candle:       " + DoubleToString(breakdown.candleScore, 0) + "/15\n";
+        text += "  TOTAL:        " + DoubleToString(breakdown.totalScore, 0) + "/100\n";
         text += "\n";
         
         text += "INDICATORS:\n";
@@ -82,7 +89,6 @@ private:
         text += "  SPREAD:       " + DoubleToString(spread, 1) + " pips\n";
         text += "\n";
         
-        // Status checks
         text += "CHECKS:\n";
         text += CheckEMAAlignment(ema20, ema50, ema200);
         text += CheckRSI(rsi14);
@@ -90,13 +96,13 @@ private:
         text += CheckSpread(spread);
         text += "\n";
         
-        text += "MESSAGE:        Build 001 - Framework Phase\n";
-        text += "                Monitoring Indicators...\n";
+        text += "MESSAGE:        Build 002 - Decision Engine\n";
+        text += "                Evaluating Signal...\n";
+        text += "REASON:         " + breakdown.reason + "\n";
         
         return text;
     }
     
-    // Check EMA Alignment
     static string CheckEMAAlignment(double ema20, double ema50, double ema200)
     {
         if(ema20 > ema50 && ema50 > ema200)
@@ -106,7 +112,6 @@ private:
         return "  ✗ EMA Not Aligned\n";
     }
     
-    // Check RSI
     static string CheckRSI(double rsi14)
     {
         if(rsi14 > 30 && rsi14 < 70)
@@ -116,7 +121,6 @@ private:
         return "  ⚠ RSI Overbought\n";
     }
     
-    // Check ATR
     static string CheckATR(double atr14)
     {
         if(atr14 > 5.0)
@@ -124,7 +128,6 @@ private:
         return "  ✗ ATR Low\n";
     }
     
-    // Check Spread
     static string CheckSpread(double spread)
     {
         if(spread < 20)
@@ -132,13 +135,9 @@ private:
         return "  ⚠ Spread High\n";
     }
     
-    // Display Text on Chart
     static void DisplayText(string text)
     {
-        // Delete old object
         ObjectDelete(0, dashboardObjectName);
-        
-        // Create new text object
         ObjectCreate(0, dashboardObjectName, OBJ_LABEL, 0, 0, 0);
         ObjectSetString(0, dashboardObjectName, OBJPROP_TEXT, text);
         ObjectSetInteger(0, dashboardObjectName, OBJPROP_XDISTANCE, dashboardXOffset);
@@ -152,7 +151,6 @@ private:
     }
 };
 
-// Static members
 string DashboardEngine::dashboardObjectName = "";
 int DashboardEngine::dashboardXOffset = 0;
 int DashboardEngine::dashboardYOffset = 0;
