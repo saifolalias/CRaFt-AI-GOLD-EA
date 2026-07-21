@@ -10,6 +10,7 @@
 
 #include "../Utilities/Logger.mqh"
 #include "TrendEngine.mqh"
+#include "SignalEngine.mqh"
 
 class DashboardEngine
 {
@@ -28,10 +29,18 @@ public:
     }
     
     // Update Dashboard Display
-    static void Update(double ema20, double ema50, double ema200, 
-                      double rsi14, double atr14, 
-                      double bid, double ask, double spread,
-                      ENUM_TREND trend)
+    static void Update(
+    double ema20,
+    double ema50,
+    double ema200,
+    double rsi14,
+    double atr14,
+    double bid,
+    double ask,
+    double spread,
+    ENUM_TREND trend,
+    ENUM_SIGNAL signal,
+    const ConfidenceBreakdown &breakdown)
     {
         // Build Dashboard Text
         string dashboardText = BuildDashboardText(ema20, ema50, ema200, rsi14, atr14, spread, trend);
