@@ -63,10 +63,24 @@ return signal;\n        }\n
 else if(breakdown.totalScore >= 65.0)\n       
 {\n            breakdown.reason = \"CONFIDENCE TOO LOW - WAITING\";\n        }\n        else\n     
 {\n          breakdown.reason = GetBlockReason(trend, rsi14, atr14, spread);\n        }\n        \n       
-lastSignal = SIGNAL_WAIT;\n        lastBreakdown = breakdown;\n        return SIGNAL_WAIT;\n    }\n    \n   
-// Get Last Signal\n    static ENUM_SIGNAL GetLastSignal()\n    {\n        return lastSignal;\n    }\n    \n   
+lastSignal = SIGNAL_WAIT;\n        
+lastBreakdown = breakdown;\n        
+return SIGNAL_WAIT;\n    }\n    \n   
+// Get Last Signal\n    
+static ENUM_SIGNAL GetLastSignal()\n    {\n        return lastSignal;\n    }\n    \n   
 // Get Last Breakdown\n    static ConfidenceBreakdown GetLastBreakdown()\n    {\n        return lastBreakdown;\n    }\n    \n    
-// Convert Signal to String\n    static string SignalToString(ENUM_SIGNAL signal)\n    {\n        switch(signal)\n        {\n           
+// Convert Signal to String\n    
+static string SignalToString(ENUM_SIGNAL signal)
+{
+   switch(signal)
+   {
+      case SIGNAL_BUY:  return "BUY";
+      case SIGNAL_SELL: return "SELL";
+      default:          return "WAIT";
+   }
+}
+static string SignalToString(ENUM_SIGNAL signal)\n    {\n       
+switch(signal)\n        {\n           
 case SIGNAL_BUY_READY:\n                
 return \"BUY READY\";\n          
 case SIGNAL_SELL_READY:\n                
